@@ -1,4 +1,6 @@
 Runner
 ======
 
-A game called runner built on Rob'sEngine
+A game called runner built with Rob's Engine
+
+Pretty much a simple demonstration of what the Engine is able to do
