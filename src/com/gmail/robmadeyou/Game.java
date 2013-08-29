@@ -1,5 +1,8 @@
 package com.gmail.robmadeyou;
 
+import java.util.Random;
+
+import com.gmail.robmadeyou.Block.BlockAir;
 import com.gmail.robmadeyou.Block.BlockStone;
 import com.gmail.robmadeyou.Effects.Color;
 import com.gmail.robmadeyou.Entity.Player;
@@ -14,14 +17,43 @@ public class Game {
 	static Player player;
 	
 	static int counter = 0;
-	static int counterMax = 50;
+	static int counterMax = 20;
 	static int currentX = 0;
 	static int currentCounter;
 	
 	public static void init(){
-		player = (Player) Engine.addEntity(new Player(64, 0, 32, 64));
+		generateWorld();
+		player = (Player) Engine.addEntity(new Player(64, Screen.getHeight() / 2, 32, 64));
 		currentCounter = 3;
 		new Thread(startCounter).start();
+	}
+	
+	public static void generateWorld(){
+		Random random = new Random();
+		
+		for(int i = 0; i < Screen.WorldWidth; i++){
+			for(int j = 0; j < Screen.WorldHeight; j++){
+				if(j != Screen.WorldHeight - 1 && j != Screen.WorldHeight - 2){
+					World.blockList[i][j] = new BlockAir(i, j);
+				}else{
+					World.blockList[i][j] = new BlockStone(i,j);
+				}
+			}
+		}
+		
+		for(int i = 0; i < Screen.WorldWidth; i++){
+			/*
+			* Do random generation here, not really the prettiest but eh, should do for now
+			*/
+			int option = random.nextInt(10);
+			if(option == 1){
+				System.out.println("yaay");
+				World.blockList[i][Screen.WorldHeight - 5] = new BlockStone(i, Screen.WorldHeight - 5);
+			}else if(option == 2){
+				World.blockList[i][Screen.WorldHeight - 3] = new BlockStone(i, Screen.WorldHeight - 3);
+				World.blockList[i][Screen.WorldHeight - 4] = new BlockStone(i, Screen.WorldHeight - 4);
+			}
+		}
 	}
 	
 	public static void loop(){
