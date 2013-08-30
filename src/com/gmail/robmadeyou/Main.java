@@ -12,7 +12,9 @@ public class Main {
 		
 		Screen.setUpWorld();
 		
+		Graphics.setUpAnimations();
 		Game.startGame();
+		
 		while(!Screen.isAskedToClose()){
 			Screen.update(60);
 			

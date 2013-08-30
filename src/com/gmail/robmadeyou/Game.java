@@ -4,9 +4,12 @@ import java.util.Random;
 
 import com.gmail.robmadeyou.Block.BlockAir;
 import com.gmail.robmadeyou.Block.BlockStone;
+import com.gmail.robmadeyou.Effects.Animate;
 import com.gmail.robmadeyou.Effects.Color;
+import com.gmail.robmadeyou.Effects.TextureLoader;
 import com.gmail.robmadeyou.Entity.Player;
 import com.gmail.robmadeyou.Gui.Text;
+import com.gmail.robmadeyou.Input.Keyboard;
 import com.gmail.robmadeyou.World.World;
 
 public class Game {
@@ -15,6 +18,10 @@ public class Game {
 	public static boolean counterFinished = false;
 	
 	static Player player;
+	
+	static Animate activeAnimation;
+	
+	static int lastPlayerWidth = 0;
 	
 	static int counter = 0;
 	static int counterMax = 20;
@@ -25,6 +32,7 @@ public class Game {
 		generateWorld();
 		player = (Player) Engine.addEntity(new Player(64, Screen.getHeight() / 2, 32, 64));
 		currentCounter = 3;
+		activeAnimation = Graphics.standingR;
 		new Thread(startCounter).start();
 	}
 	
@@ -55,9 +63,12 @@ public class Game {
 			}
 		}
 	}
-	
+	/*
+	 * Game loop where graphics and the world is being updated
+	 */
 	public static void loop(){
 		if(!isGameOver){
+			//Controls the world collapsing on the player
 			Text.drawString(currentCounter  +"", Screen.getWidth() / 2, Screen.getHeight() / 2, Layer.GUILayer(), 1, 1, Color.Black, true, false);
 			if(currentCounter == 0){
 				counter++;
@@ -73,6 +84,30 @@ public class Game {
 					gameOver();
 				}
 			}
+			/*
+			 * Math to solve the different width of textures for player
+			 */
+			int thisPlayerWidth = TextureLoader.getTextureWidth(activeAnimation.getTextureID());
+			int difference = thisPlayerWidth - lastPlayerWidth;
+			
+			player.setX(player.getX() - difference);
+			player.setWidth(thisPlayerWidth);
+			
+			
+			lastPlayerWidth = thisPlayerWidth;
+			
+			player.setTexture(activeAnimation.getTextureID());
+			
+			if(Keyboard.isKeyDown(Keyboard.Key.LeftArrow)){
+				activeAnimation = Graphics.runningL;
+			}else if(Keyboard.isKeyDown(Keyboard.Key.RightArrow)){
+				activeAnimation = Graphics.runningR;
+			}else{
+				activeAnimation = Graphics.standingR;
+			}
+			
+			
+			
 		}else{
 			if(currentCounter == 0){
 				counter++;
