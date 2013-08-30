@@ -1,5 +1,6 @@
 package com.gmail.robmadeyou;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import com.gmail.robmadeyou.Block.BlockAir;
@@ -22,11 +23,14 @@ public class Game {
 	static Animate activeAnimation;
 	
 	static int lastPlayerWidth = 0;
+	static String direction = "right";
 	
 	static int counter = 0;
 	static int counterMax = 20;
+	
 	static int currentX = 0;
 	static int currentCounter;
+	
 	
 	public static void init(){
 		generateWorld();
@@ -38,13 +42,29 @@ public class Game {
 	
 	public static void generateWorld(){
 		Random random = new Random();
-		
+		int currentHeight = 2;
 		for(int i = 0; i < Screen.WorldWidth; i++){
-			for(int j = 0; j < Screen.WorldHeight; j++){
-				if(j != Screen.WorldHeight - 1 && j != Screen.WorldHeight - 2){
-					World.blockList[i][j] = new BlockAir(i, j);
+			
+			
+			int chance = random.nextInt(5);
+			if(chance == 0){
+				boolean upOrDown = random.nextBoolean();
+				System.out.println(upOrDown);
+				if(upOrDown){
+					if(currentHeight > 2){
+						currentHeight--;
+					}
 				}else{
-					World.blockList[i][j] = new BlockStone(i,j);
+					if(currentHeight < 20){
+						currentHeight++;
+					}
+				}
+			}
+			for(int j = 0; j < Screen.WorldHeight; j++){
+				if(j < Screen.WorldHeight - currentHeight){
+					World.blockList.setBlock(new BlockAir(i, j));
+				}else{
+					World.blockList.setBlock(new BlockStone(i, j));
 				}
 			}
 		}
@@ -55,11 +75,10 @@ public class Game {
 			*/
 			int option = random.nextInt(10);
 			if(option == 1){
-				System.out.println("yaay");
-				World.blockList[i][Screen.WorldHeight - 5] = new BlockStone(i, Screen.WorldHeight - 5);
+				World.blockList.setBlock(new BlockStone(i, Screen.WorldHeight - 5));
 			}else if(option == 2){
-				World.blockList[i][Screen.WorldHeight - 3] = new BlockStone(i, Screen.WorldHeight - 3);
-				World.blockList[i][Screen.WorldHeight - 4] = new BlockStone(i, Screen.WorldHeight - 4);
+				World.blockList.setBlock(new BlockStone(i, Screen.WorldHeight - 3));
+				World.blockList.setBlock(new BlockStone(i, Screen.WorldHeight - 4));
 			}
 		}
 	}
@@ -75,7 +94,7 @@ public class Game {
 				if(counter >= counterMax){
 					counter = 0;
 					for(int i = 0; i < Screen.WorldHeight; i++){
-						World.blockList[currentX][i] = new BlockStone(currentX, i);
+						World.blockList.setBlock(new BlockStone(currentX, i));
 					}
 					currentX++;
 				}
@@ -96,14 +115,25 @@ public class Game {
 			
 			lastPlayerWidth = thisPlayerWidth;
 			
+			if(activeAnimation.getInverts()){
+				player.setTextureInverts(true);
+			}else{
+				player.setTextureInverts(false);
+			}
 			player.setTexture(activeAnimation.getTextureID());
 			
 			if(Keyboard.isKeyDown(Keyboard.Key.LeftArrow)){
+				direction = "left";
 				activeAnimation = Graphics.runningL;
 			}else if(Keyboard.isKeyDown(Keyboard.Key.RightArrow)){
+				direction = "right";
 				activeAnimation = Graphics.runningR;
 			}else{
-				activeAnimation = Graphics.standingR;
+				if(direction.equals("right")){
+					activeAnimation = Graphics.standingR;
+				}else{
+					activeAnimation = Graphics.standingL;
+				}
 			}
 			
 			
@@ -115,7 +145,7 @@ public class Game {
 				if(counter >= counterMax){
 					counter = 0;
 					for(int i = 0; i < Screen.WorldHeight; i++){
-						World.blockList[currentX][i] = new BlockStone(currentX, i);
+						World.blockList.setBlock(new BlockStone(currentX, i));
 					}
 					currentX++;
 				}

@@ -41,6 +41,7 @@ public class Graphics {
 		
 			
 		standingR = new Animate(listStanding, 12, 0, true, false);
+		standingL = new Animate(listStanding, 12, 0, true, true);
 		
 		ArrayList<Integer> listRunning = new ArrayList<Integer>();
 		listRunning.add(TextureLoader.createTexture("res/player/running.png", 0, 0, 27, 37));
