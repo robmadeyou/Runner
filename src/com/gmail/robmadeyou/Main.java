@@ -7,8 +7,8 @@ public class Main {
 	public static void main(String args[]){
 		
 		Screen.create(800, 512, "Runner", GameType.SIDE_SCROLLER, false);
-		Screen.toggleVSync();
-		Screen.setWorldDimensionsInBlocks(1000, 0);
+		
+		Screen.setWorldDimensionsInBlocks(1000, 40);
 		
 		Screen.setUpWorld();
 		

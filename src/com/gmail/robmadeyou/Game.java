@@ -1,16 +1,20 @@
 package com.gmail.robmadeyou;
 
-import java.util.ArrayList;
 import java.util.Random;
+
+import org.lwjgl.opengl.Display;
 
 import com.gmail.robmadeyou.Block.BlockAir;
 import com.gmail.robmadeyou.Block.BlockStone;
 import com.gmail.robmadeyou.Effects.Animate;
 import com.gmail.robmadeyou.Effects.Color;
 import com.gmail.robmadeyou.Effects.TextureLoader;
+import com.gmail.robmadeyou.Effects.Textures;
+import com.gmail.robmadeyou.Entity.Npc;
 import com.gmail.robmadeyou.Entity.Player;
 import com.gmail.robmadeyou.Gui.Text;
 import com.gmail.robmadeyou.Input.Keyboard;
+import com.gmail.robmadeyou.Item.Item;
 import com.gmail.robmadeyou.World.World;
 
 public class Game {
@@ -24,8 +28,10 @@ public class Game {
 	
 	static int lastPlayerWidth = 0;
 	static String direction = "right";
+	static String message = "";
 	
-	static int counter = 0;
+	static double counter = 0;
+	static double countBy = 0.25;
 	static int counterMax = 20;
 	
 	static int currentX = 0;
@@ -62,6 +68,21 @@ public class Game {
 			}
 			for(int j = 0; j < Screen.WorldHeight; j++){
 				if(j < Screen.WorldHeight - currentHeight){
+					int itemSpawn = random.nextInt(100);
+					if(itemSpawn == 10){
+						int itemType = random.nextInt(5);
+						if(itemType == 0){
+							ItemSpeedBoost item = (ItemSpeedBoost) Engine.addNewItem(new ItemSpeedBoost(i * World.BLOCK_SIZE(), 
+									j * World.BLOCK_SIZE(), 16, 16, Layer.GUILayer(), Textures.test));
+						}else if(itemType == 1){
+							ItemGravityBoost item = (ItemGravityBoost) Engine.addNewItem(new ItemGravityBoost(i * World.BLOCK_SIZE(),
+									j * World.BLOCK_SIZE(), 16, 16, Layer.GUILayer(), Textures.test2));
+						}else if(itemType == 2){
+							ItemWallSpeedIncrease item = (ItemWallSpeedIncrease) Engine.addNewItem(new ItemWallSpeedIncrease(i * World.BLOCK_SIZE(),
+									j * World.BLOCK_SIZE(), 16, 16, Layer.GUILayer(), Textures.ITEM_TEST));
+						}
+					
+					}
 					World.blockList.setBlock(new BlockAir(i, j));
 				}else{
 					World.blockList.setBlock(new BlockStone(i, j));
@@ -86,11 +107,12 @@ public class Game {
 	 * Game loop where graphics and the world is being updated
 	 */
 	public static void loop(){
+		Text.drawString(message, Display.getWidth() / 2 - 50, 200, Layer.GUILayer(), 1, 1, Color.Black, false, false);
 		if(!isGameOver){
 			//Controls the world collapsing on the player
 			Text.drawString(currentCounter  +"", Screen.getWidth() / 2, Screen.getHeight() / 2, Layer.GUILayer(), 1, 1, Color.Black, true, false);
 			if(currentCounter == 0){
-				counter++;
+				counter += countBy;
 				if(counter >= counterMax){
 					counter = 0;
 					for(int i = 0; i < Screen.WorldHeight; i++){
@@ -98,7 +120,7 @@ public class Game {
 					}
 					currentX++;
 				}
-				if(player.getY() < 0){
+				if(player.getX() < currentX * World.BLOCK_SIZE()){
 					isGameOver = true;
 					gameOver();
 				}
